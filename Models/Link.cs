@@ -9,6 +9,6 @@ namespace LinkApi.Models
         [Required]
         public string stringLink { get; set; } = String.Empty;
         [Required]
-        public DateTime dateOfCreation { get; set; } = DateTime.Now;
+        public DateTime dateOfCreation { get; set; } = DateTime.UtcNow;
     }
 }

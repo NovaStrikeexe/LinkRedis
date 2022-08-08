@@ -15,19 +15,20 @@ namespace LinkApi.Data
 
         public int CountNumbersOfLinks()
         {
-            var count = GetServer().Keys().Count();
+            var count = GetServer().Keys(pattern: "link_*").Count();
             return count;
         }
 
         public string DeleteLink(string linkGuid)
         {
             var db = _redis.GetDatabase();
-            var jsonLink = db.StringGet(linkGuid);
+            var jsonLink = db.StringGet("link_" + linkGuid.Substring(0, 8));
+            if (jsonLink.IsNull) return null;
             Link linkObj = JsonSerializer.Deserialize<Link>(jsonLink);
             DateTime dateOfCreation = linkObj.dateOfCreation;
-            if (linkObj != null && DateTime.Now.Subtract(dateOfCreation).TotalMinutes < 5)
+            if (linkObj != null && DateTime.UtcNow.Subtract(dateOfCreation).TotalMinutes < 5)
             {
-                db.KeyDelete(linkGuid);
+                db.KeyDelete("link_" + linkGuid.Substring(0, 8));
                 return "Data is deleted";
                 
             }
@@ -40,17 +41,18 @@ namespace LinkApi.Data
             Link link = new Link();
             link.stringLink = stringLink;
             var serialLink = JsonSerializer.Serialize(link);
-            db.StringSet(link.guid, serialLink);
+            db.StringSet("link_" + link.guid.Substring(0, 8), serialLink);
             return link.guid;
         }
 
         public string UnpackLink(string linkGuid)
         {
             var db = _redis.GetDatabase();
-            var jsonLink = db.StringGet(linkGuid);
+            var jsonLink = db.StringGet("link_" + linkGuid.Substring(0, 8));
+            if (jsonLink.IsNull) return null;
             Link linkObj = JsonSerializer.Deserialize<Link>(jsonLink);
             DateTime dateOfCreation = linkObj.dateOfCreation;
-            if (linkObj != null && DateTime.Now.Subtract(dateOfCreation).TotalMinutes < 5 )
+            if (linkObj != null && DateTime.UtcNow.Subtract(dateOfCreation).TotalMinutes < 5)
             {
                 return linkObj.stringLink;
             }
