@@ -22,13 +22,13 @@ namespace LinkApi.Data
         public string DeleteLink(string linkGuid)
         {
             var db = _redis.GetDatabase();
-            var jsonLink = db.StringGet("link_" + linkGuid.Substring(0, 8));
+            var jsonLink = db.StringGet("link_" + linkGuid);
             if (jsonLink.IsNull) return null;
             Link linkObj = JsonSerializer.Deserialize<Link>(jsonLink);
             DateTime dateOfCreation = linkObj.dateOfCreation;
             if (linkObj != null && DateTime.UtcNow.Subtract(dateOfCreation).TotalMinutes < 5)
             {
-                db.KeyDelete("link_" + linkGuid.Substring(0, 8));
+                db.KeyDelete("link_" + linkGuid);
                 return "Data is deleted";
                 
             }
@@ -41,14 +41,14 @@ namespace LinkApi.Data
             Link link = new Link();
             link.stringLink = stringLink;
             var serialLink = JsonSerializer.Serialize(link);
-            db.StringSet("link_" + link.guid.Substring(0, 8), serialLink);
+            db.StringSet("link_" + link.guid, serialLink);
             return link.guid;
         }
 
         public string UnpackLink(string linkGuid)
         {
             var db = _redis.GetDatabase();
-            var jsonLink = db.StringGet("link_" + linkGuid.Substring(0, 8));
+            var jsonLink = db.StringGet("link_" + linkGuid);
             if (jsonLink.IsNull) return null;
             Link linkObj = JsonSerializer.Deserialize<Link>(jsonLink);
             DateTime dateOfCreation = linkObj.dateOfCreation;
