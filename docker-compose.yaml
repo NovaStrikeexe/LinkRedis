@@ -2,6 +2,6 @@ version: '3.8'
 services:
   redis:
     image: redis
-    container_name: link_api
+    container_name: link_api_test
     ports: 
       - "6379:6379"
