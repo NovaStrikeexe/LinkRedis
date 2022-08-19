@@ -1,5 +1,5 @@
 POST_PACK_SCHEMA = {
-    "type":"object",
+    "type": "string",
     "properties":{
         "guid":{"type":"string"}
     }
